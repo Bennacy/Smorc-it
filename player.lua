@@ -45,12 +45,11 @@ function UpdatePlayer(dt, frictioncoefficient)
         local moveForce = vector2.new(0, -movementForce)
         acceleration = vector2.applyForce(moveForce, mass, acceleration)
     end
-    
+
     if love.keyboard.isDown("down") then
         local moveForce = vector2.new(0, movementForce)
         acceleration = vector2.applyForce(moveForce, mass, acceleration)
     end
-
 
     if friction.x * acceleration.x >= (0.7*dt) then
         velocity.x = 0
@@ -63,7 +62,6 @@ function UpdatePlayer(dt, frictioncoefficient)
     velocity = vector2.add(velocity, vector2.mult(acceleration, dt))
     velocity = vector2.limit(velocity, maxvelocity)
     playerposition = vector2.add(playerposition, vector2.mult(velocity, dt))
---Movement End
 
     if EndStage == false then 
         if playerposition.y < love.graphics.getHeight()  -200 - playersize.y then
@@ -81,7 +79,7 @@ function UpdatePlayer(dt, frictioncoefficient)
 
         if playerposition.x > 800 - playersize.x and #enemy > 6 then 
             playerposition.x = 800 -playersize.x
-        end 
+        end
 
         if playerposition.x > 1890 - playersize.x and #enemy~=0 then
             playerposition.x = 1890 - playersize.x
@@ -94,10 +92,12 @@ function UpdatePlayer(dt, frictioncoefficient)
             BackUpCam = true
         end
     end
+--Movement End
 
     if weapon ~= nil then
         weapon.position.x=playerposition.x+playersize.x/2
         weapon.position.y=playerposition.y+playersize.y/2
+        weapon.cooldownTimer=(weapon.cooldownTimer + dt)
 
         if love.keyboard.isDown("right") then
             weapon.direction= 1
@@ -112,19 +112,16 @@ function UpdatePlayer(dt, frictioncoefficient)
         end
     end
 
-
     if weapon ~= nil and love.keyboard.isDown("c") and (weapon.cooldownTimer > weapon.attSp) then --attack
         attacking= true
         weapon.cooldownTimer = 0
 
-    elseif weapon ~= nil then
-        weapon.cooldownTimer=(weapon.cooldownTimer + dt)
-
-    else
+    elseif weapon ~= nil and weapon.cooldownTimer>weapon.attSp/8 then
         attacking= false
     end
 
-    if EndStage == true and wallsUp == false then 
+
+    if EndStage == true and wallsUp == false then
         if playerposition.y < love.graphics.getHeight()  -200 - playersize.y then
             playerposition.y = love.graphics.getHeight() -200 - playersize.y
         end
@@ -141,18 +138,18 @@ function UpdatePlayer(dt, frictioncoefficient)
             playerposition.x = (playersize.x *1.5)
         end
 
-    elseif wallsUp == true then 
-        if teleported == false then 
+    elseif wallsUp == true then
+        if teleported == false then
             playerposition = vector2.new(200,500)
-            teleported = true 
+            teleported = true
         end
 
         if playerposition.x >= 500 - playersize.x then
             playerposition.x =  500 - playersize.x
         end
 
-        if playerposition.x < 250    then
-            playerposition.x = 250 
+        if playerposition.x < 250 then
+            playerposition.x = 250
         end
 
         if playerposition.y < love.graphics.getHeight()  -200 - playersize.y then
@@ -195,24 +192,34 @@ end
 
 
 function GetPlayerVelocity()
-    return velocity  
+    return velocity
 end
-
 
 function UpdatePlayerHealth()
-    if health == 0 then 
+    if health == 0 then
         return true
-    else 
-        return false 
-end
-end
-function GetGameover()
-    if health < 0 then   
-        return true 
-    else 
-        return false 
+    else
+        return false
     end
-end 
+end
+
+function GetGameover()
+    if health < 0 then
+        return true
+    else
+        return false
+    end
+end
+
+function DamagePlayer(damage)
+    if god == false then
+        health=health-damage
+    end
+end
+
+function AssignWeapon(array, id)
+    weapon= array[id]
+end
 
 function DrawPlayer()
     love.graphics.setColor(1, 1, 1)
@@ -226,18 +233,9 @@ function DrawPlayer()
         love.graphics.setColor(0, 1, 0.5)
         love.graphics.rectangle("fill",playerposition.x, playerposition.y-15, playersize.x*health/maxHealth, 7.5)
     end
-
+    if attacking== true then
+        love.graphics.rectangle("fill", playerposition.x, playerposition.y, weapon.size.x, weapon.size.y)
+    end
     love.graphics.setColor(0, 0, 0)
     love.graphics.rectangle("line",playerposition.x, playerposition.y-15, playersize.x, 7.5)
-end
-
-
-function DamagePlayer(damage)
-    if god == false then
-        health=health-damage
-    end
-end
-
-function AssignWeapon(array, id)
-    weapon= array[id]
 end

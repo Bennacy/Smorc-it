@@ -39,7 +39,7 @@ function DrawWeapon(weapons)
             love.graphics.setColor(0.5, 0.5, 0)
         end
         
-        if playerWeapon== nil then
+        if weapons[i]~= playerWeapon then
         love.graphics.rectangle("fill", weapons[i].position.x, weapons[i].position.y, weapons[i].size.x, weapons[i].size.y)
         end
     end

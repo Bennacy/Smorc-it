@@ -69,8 +69,6 @@ function love.load()
 end
 
 function love.update(dt)
-
-  io.write("test")
   if love.keyboard.isDown("escape") then
     love.event.quit()
   end
