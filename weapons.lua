@@ -23,7 +23,6 @@ function CreateWeapon(x, y, w, h, t)
      grabbed=false, dropped=false, dropY= 0, groundTimer= 0, durability=durability, cooldownTimer=0}
 end
 
-
 function DrawWeapon(weapons)
     for i=1, #weapons do
 
