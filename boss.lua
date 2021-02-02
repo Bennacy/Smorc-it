@@ -202,28 +202,31 @@ function UpdateBoss(boss,dt,frictionCoef)
     
                 boss[i].delay=boss[i].delay+dt
     
-                playerWeapon= GetPlayerWeapon()
-            if playerWeapon~= nil then
-                local playerAttack= GetAttack()
-
-                if playerAttack== true and playerWeapon.direction>0 and CheckCollision(playerWeapon.position.x, playerWeapon.position.y, playerWeapon.size.x, playerWeapon.size.y,
-                boss[i].position.x, boss[i].position.y, boss[i].size.x, boss[i].size.y)== true then
-                    DamageEnemy(boss, playerWeapon.damage, i)
-                    DamageWeapon(playerWeapon)
-                    boss[i].KnockBackDirection = vector2.new(1,0)
-                    boss[i].delay=0
-                    boss[i].KnockBack = true
+                local weapons= GetWeapons()
+                for t=1, #weapons do
+                    if weapons[t].direction>0 and weapons[t].attacking==true and CheckCollision(weapon[t].position.x, weapons[t].position.y, weapons[t].size.x, weapons[t].size.y, boss[i].position.x, boss[i].position.y, boss[i].size.x, boss[i].size.y)== true then
+                        
+                        if boss[i].delay>-1 then
+                        DamageBoss(boss, weapons[t].damage, i)
+                        DamageWeapon(weapons,t)
+                        boss[i].KnockBackDirection = vector2.new(1,0)
+                        boss[i].delay=0
+                        boss[i].KnockBack = true 
+                       
+                       end
+                    elseif weapons[t].direction<0 then
+                        if weapons[t].attacking==true and CheckCollision(weapons[t].position.x-weapons[t].size.x, weapons[t].position.y, weapons[t].size.x, weapons[t].size.y, boss[i].position.x, boss[i].position.y, boss[i].size.x, boss[i].size.y)== true then
+                            
+                            if boss[i].delay>-1 then
+                                DamageBoss(boss, weapons[t].damage, i)
+                                DamageWeapon(weapons,t)
+                                boss[i].KnockBackDirection = vector2.new(-1,0)
+                                boss[i].delay=0
+                                boss[i].KnockBack = true 
+                            end
+                        end
+                    end
                 end
-
-                if playerAttack== true and playerWeapon.direction<0 and CheckCollision(playerWeapon.position.x-playerWeapon.size.x, playerWeapon.position.y, playerWeapon.size.x, playerWeapon.size.y,
-                boss[i].position.x, boss[i].position.y, boss[i].size.x, boss[i].size.y)== true then
-                    DamageEnemy(boss, playerWeapon.damage, i)
-                    DamageWeapon(playerWeapon)
-                    boss[i].KnockBackDirection = vector2.new(-1,0)
-                    boss[i].delay=0
-                    boss[i].KnockBack = true
-                end
-            end
     
                 if boss[i].health<0 then
                     KillBoss(boss, i)

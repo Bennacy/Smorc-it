@@ -2,7 +2,6 @@ require "player"
 
 local mass= 1
 local ea= {}
-local playerWeapon= {}
 
 
 function CreateEnemy(x, y, w, h, t)
@@ -153,39 +152,45 @@ function UpdateEnemy(enemy,dt, frictionCoef)
             end
 
             enemy[i].delay=enemy[i].delay+dt
-
-            playerWeapon= GetPlayerWeapon()
-            if playerWeapon~= nil then
-                local playerAttack= GetAttack()
-
-                if playerAttack== true and playerWeapon.direction>0 and CheckCollision(playerWeapon.position.x, playerWeapon.position.y, playerWeapon.size.x, playerWeapon.size.y,
+            
+            local weapon= GetWeapons()
+             
+                if weapon[i].direction>0 and weapon[i].attacking==true and CheckCollision(weapon[i].position.x, weapon[i].position.y, weapon[i].size.x, weapon[i].size.y, 
                 enemy[i].position.x, enemy[i].position.y, enemy[i].size.x, enemy[i].size.y)== true then
-                    DamageEnemy(enemy, playerWeapon.damage, i)
-                    DamageWeapon(playerWeapon)
+                    
+                    if enemy[i].delay>-1 then --ataque para direita
+                    DamageEnemy(enemy, weapon[i].damage, i)
+                    DamageWeapon(weapon,i)
                     enemy[i].KnockBackDirection = vector2.new(1,0)
                     enemy[i].delay=0
-                    enemy[i].KnockBack = true
-                end
+                    enemy[i].KnockBack = true 
+                   end
 
-                if playerAttack== true and playerWeapon.direction<0 and CheckCollision(playerWeapon.position.x-playerWeapon.size.x, playerWeapon.position.y, playerWeapon.size.x, playerWeapon.size.y,
-                enemy[i].position.x, enemy[i].position.y, enemy[i].size.x, enemy[i].size.y)== true then
-                    DamageEnemy(enemy, playerWeapon.damage, i)
-                    DamageWeapon(playerWeapon)
-                    enemy[i].KnockBackDirection = vector2.new(-1,0)
-                    enemy[i].delay=0
-                    enemy[i].KnockBack = true
+                elseif weapon[i].direction<0 then --ataque para esquerda
+                    if weapon[i].attacking==true and CheckCollision(weapon[i].position.x-weapon[i].size.x, weapon[i].position.y, weapon[i].size.x, weapon[i].size.y, 
+                    enemy[i].position.x, enemy[i].position.y, enemy[i].size.x, enemy[i].size.y)== true then
+                        
+                        if enemy[i].delay>-1 then
+                            DamageEnemy(enemy, weapon[i].damage, i)
+                            DamageWeapon(weapon,i)
+                            enemy[i].KnockBackDirection = vector2.new(-1,0)
+                            enemy[i].KnockBack = true 
+                            enemy[i].delay=0
+                        end
+                    end
                 end
-            end
+      
+
 
             if enemy[i].health<0 then
                 KillEnemy(enemy, i)
             end
-            
             end
         end
 
     end
     ea=enemy
+    attacking=false
 end
 
 

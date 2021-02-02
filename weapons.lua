@@ -13,11 +13,11 @@ function CreateWeapon(x, y, w, h, t)
     if t == 1 then
         attackSpeed= 0.75
         damage= 1.5
-        durability = 1000
+        durability = 100
     elseif t== 2 then
         attackSpeed=1
         damage = 3
-        durability = 1000
+        durability = 100
     end
     return{position=vector2.new(x,y), size=vector2.new(w,h), type= t, attSp= attackSpeed, damage=damage, direction=0, attacking=false,
      grabbed=false, dropped=false, dropY= 0, groundTimer= 0, durability=durability, cooldownTimer=0}
@@ -54,6 +54,10 @@ function UpdateWeapon(weapons,dt)
                 weapons[i].damage = 400
             end
 
+            if weapons[i].durability <0 then
+                BreakWeapon(weapons,i)
+            end
+
             if love.keyboard.isDown("h") then
                 god = true
             end
@@ -87,12 +91,18 @@ function GetWeapons()
 end
 
 function DropWeapon(type, position)
-    table.insert( wa, CreateWeapon(position.x, position.y, 65, 10, type))
+    local drop_weapon = GetWeapons()
+    table.insert( drop_weapon, CreateWeapon(position.x, position.y, 65, 10, type))
 end
 
+function DamageWeapon(weapons,i)
+    weapons[i].durability= weapons[i].durability- 0
+    return weapons[i].durability
+end
 
-
-
+function BreakWeapon(weapons,i)
+    table.remove(weapons,i)
+end
 
 function PickupWeapon(array)
     
