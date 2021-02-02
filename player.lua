@@ -94,7 +94,16 @@ function UpdatePlayer(dt, frictioncoefficient)
     end
 --Movement End
 
+--Weapon Start
     if weapon ~= nil then
+        if weapon.durability <0 then
+            attacking= false
+            weapon.groundTimer= 100
+            BreakWeapon()
+        end
+    end
+
+    if weapon~= nil then
         weapon.position.x=playerposition.x+playersize.x/2
         weapon.position.y=playerposition.y+playersize.y/2
         weapon.cooldownTimer=(weapon.cooldownTimer + dt)
@@ -115,11 +124,11 @@ function UpdatePlayer(dt, frictioncoefficient)
     if weapon ~= nil and love.keyboard.isDown("c") and (weapon.cooldownTimer > weapon.attSp) then --attack
         attacking= true
         weapon.cooldownTimer = 0
-
-    elseif weapon ~= nil and weapon.cooldownTimer>weapon.attSp/8 then
+    end
+    if weapon ~= nil and weapon.cooldownTimer>weapon.attSp/8 then
         attacking= false
     end
-
+--Weapon End
 
     if EndStage == true and wallsUp == false then
         if playerposition.y < love.graphics.getHeight()  -200 - playersize.y then
@@ -162,7 +171,6 @@ function UpdatePlayer(dt, frictioncoefficient)
     end
 end
 
-
 function GetEndstage()
     return EndStage
 end
@@ -181,15 +189,6 @@ end
 function GetPlayerSize()
     return playersize
 end
-
-function GetPlayerWeapon()
-    return weapon
-end
-
-function GetAttack()
-    return attacking
-end
-
 
 function GetPlayerVelocity()
     return velocity
@@ -221,7 +220,29 @@ function AssignWeapon(array, id)
     weapon= array[id]
 end
 
+function BreakWeapon()
+    weapon= nil
+end
+
+function DamageWeapon(weapon)
+    weapon.durability= weapon.durability- 0.75
+    return weapon.durability
+end
+
+function GetPlayerWeapon()
+    return weapon
+end
+
+function GetAttack()
+    return attacking
+end
+
 function DrawPlayer()
+    if attacking== true and weapon ~= nil then
+        love.graphics.setColor(0.2, 0, 0.5)
+        love.graphics.rectangle("fill", playerposition.x+ playersize.x/2, playerposition.y+ playersize.y/3, weapon.direction* weapon.size.x, weapon.size.y)
+    end
+
     love.graphics.setColor(1, 1, 1)
     love.graphics.rectangle("fill", playerposition.x, playerposition.y, playersize.x, playersize.y)
     love.graphics.setColor(0, 0, 0)
@@ -233,9 +254,7 @@ function DrawPlayer()
         love.graphics.setColor(0, 1, 0.5)
         love.graphics.rectangle("fill",playerposition.x, playerposition.y-15, playersize.x*health/maxHealth, 7.5)
     end
-    if attacking== true then
-        love.graphics.rectangle("fill", playerposition.x, playerposition.y, weapon.size.x, weapon.size.y)
-    end
+
     love.graphics.setColor(0, 0, 0)
     love.graphics.rectangle("line",playerposition.x, playerposition.y-15, playersize.x, 7.5)
 end
