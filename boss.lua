@@ -1,5 +1,6 @@
 local mass= 1
 local drawing=1000000
+local playerWeapon= {}
 
 function CreateBoss(x, y, w, h, t)
     local health
@@ -40,7 +41,7 @@ function CreateBoss(x, y, w, h, t)
     end
     return{position=vector2.new(x,y), size=vector2.new(w,h), type= t, health=health, attSp= attackSpeed, maxvelocity= maxvelocity, damage=damage, attacking=false, 
     attackLength= 0, growing=false, maxHealth=maxHealth,delay = 1,
-    KnockBack = false, KnockBackTimer = 0,KnockBackCooldown = 0.5,KnockBackDirection = vector2.new(0,0)}
+    KnockBack = false, KnockBackTimer = 0,KnockBackCooldown = 0.05,KnockBackDirection = vector2.new(0,0)}
 end
 
 function DrawBoss(boss)
@@ -121,7 +122,7 @@ function UpdateBoss(boss,dt,frictionCoef)
                 boss[i].KnockBackTimer = boss[i].KnockBackTimer+dt
 
             if  boss[i].KnockBackTimer < boss[i].KnockBackCooldown then 
-                local movement = vector2.mult(boss[i].KnockBackDirection,75)
+                local movement = vector2.mult(boss[i].KnockBackDirection,7500)
                 local velocity = vector2.new(0,0)
 
             velocity= vector2.add(velocity, movement)

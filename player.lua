@@ -150,6 +150,7 @@ function UpdatePlayer(dt, frictioncoefficient)
     elseif wallsUp == true then
         if teleported == false then
             playerposition = vector2.new(200,500)
+            EraseWeapons()
             teleported = true
         end
 
@@ -171,20 +172,40 @@ function UpdatePlayer(dt, frictioncoefficient)
     end
 end
 
+function DrawPlayer()
+    if attacking== true and weapon ~= nil then
+        love.graphics.setColor(0.2, 0, 0.5)
+        love.graphics.rectangle("fill", playerposition.x+ playersize.x/2, playerposition.y+ playersize.y/3, weapon.direction* weapon.size.x, weapon.size.y)
+    end
+
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.rectangle("fill", playerposition.x, playerposition.y, playersize.x, playersize.y)
+    love.graphics.setColor(0, 0, 0)
+    love.graphics.rectangle("line",playerposition.x, playerposition.y, playersize.x, playersize.y)
+    love.graphics.setColor(1, 0, 0)
+    love.graphics.rectangle("fill",playerposition.x, playerposition.y-15, playersize.x, 7.5)
+
+    if health>0 then
+        love.graphics.setColor(0, 1, 0.5)
+        love.graphics.rectangle("fill",playerposition.x, playerposition.y-15, playersize.x*health/maxHealth, 7.5)
+    end
+
+    love.graphics.setColor(0, 0, 0)
+    love.graphics.rectangle("line",playerposition.x, playerposition.y-15, playersize.x, 7.5)
+end
+
+--General Info
 function GetEndstage()
     return EndStage
 end
-
 
 function Getcamerareset()
     return BackUpCam
 end
 
-
 function GetPlayerPosition()
     return playerposition
 end
-
 
 function GetPlayerSize()
     return playersize
@@ -209,6 +230,7 @@ function GetGameover()
         return false
     end
 end
+--Info End
 
 function DamagePlayer(damage)
     if god == false then
@@ -216,6 +238,7 @@ function DamagePlayer(damage)
     end
 end
 
+--Weapon Related
 function AssignWeapon(array, id)
     weapon= array[id]
 end
@@ -236,25 +259,4 @@ end
 function GetAttack()
     return attacking
 end
-
-function DrawPlayer()
-    if attacking== true and weapon ~= nil then
-        love.graphics.setColor(0.2, 0, 0.5)
-        love.graphics.rectangle("fill", playerposition.x+ playersize.x/2, playerposition.y+ playersize.y/3, weapon.direction* weapon.size.x, weapon.size.y)
-    end
-
-    love.graphics.setColor(1, 1, 1)
-    love.graphics.rectangle("fill", playerposition.x, playerposition.y, playersize.x, playersize.y)
-    love.graphics.setColor(0, 0, 0)
-    love.graphics.rectangle("line",playerposition.x, playerposition.y, playersize.x, playersize.y)
-    love.graphics.setColor(1, 0, 0)
-    love.graphics.rectangle("fill",playerposition.x, playerposition.y-15, playersize.x, 7.5)
-
-    if health>0 then
-        love.graphics.setColor(0, 1, 0.5)
-        love.graphics.rectangle("fill",playerposition.x, playerposition.y-15, playersize.x*health/maxHealth, 7.5)
-    end
-
-    love.graphics.setColor(0, 0, 0)
-    love.graphics.rectangle("line",playerposition.x, playerposition.y-15, playersize.x, 7.5)
-end
+-- Weapon End

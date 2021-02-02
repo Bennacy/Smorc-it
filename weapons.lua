@@ -1,7 +1,7 @@
 require "player"
 
 
-local wa = {}
+local weapons = {}
 local god = false
 local playerWeapon
 
@@ -23,7 +23,7 @@ function CreateWeapon(x, y, w, h, t)
      grabbed=false, dropped=false, dropY= 0, groundTimer= 0, durability=durability, cooldownTimer=0}
 end
 
-function DrawWeapon(weapons)
+function DrawWeapon()
     for i=1, #weapons do
 
         if weapons[i].type== 0 then
@@ -46,7 +46,9 @@ function DrawWeapon(weapons)
 end
 
 
-function UpdateWeapon(weapons,dt)
+function UpdateWeapon(array,dt)
+    weapons= array
+
     playerWeapon= GetPlayerWeapon()
     for i=1, #weapons do
         if weapons[i] then
@@ -90,10 +92,8 @@ function DropWeapon(type, position)
     table.insert( wa, CreateWeapon(position.x, position.y, 65, 10, type))
 end
 
-
-
-
-
-function PickupWeapon(array)
-    
+function EraseWeapons()
+    for i= 1, #weapons do
+        weapons[i].groundTimer= 100
+    end
 end

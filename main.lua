@@ -58,7 +58,6 @@ function love.load()
   Win = love.graphics.newImage("victory.png")
 
   weapons[1]=CreateWeapon(100,500,65,10,1)
-  weapons[2]=CreateWeapon(200,500,65,10,1)
 
   font = love.graphics.newFont(32)
 
@@ -70,18 +69,22 @@ function love.load()
 end
 
 function love.update(dt)
+
+  love.keypressed()
+
+
   if love.keyboard.isDown("escape") then
     love.event.quit()
   end
 
-  if GetGameover() == true then 
-    GameState = 1 
+  if GetGameover() == true then
+    GameState = 1
   elseif GetWin(boss)  == true then
-    GameState = 2  
+    GameState = 2
   end
 
   camera=GetCamera()
-  if GameState == 0 then  
+  if GameState == 0 then
     if started == true then
       UpdatePlayer(dt, frictioncoefficient)
       UpdateWeapon(weapons,dt)
@@ -89,7 +92,7 @@ function love.update(dt)
       UpdateBoss(boss,dt, frictioncoefficient)
       UpdateCamera()
       Reset = GetEndstage()
-      PlayerDead = UpdatePlayerHealth()  
+      PlayerDead = UpdatePlayerHealth()
     end
   end
   wallsUp = GetWalls()
@@ -98,9 +101,9 @@ end
 
 function love.draw()
 
-  if GameState == 0 then 
+  if GameState == 0 then
     camera:set()
-    if Reset == false then 
+    if Reset == false then
       love.graphics.setColor(1, 1, 1)
       love.graphics.setColor(0, 0, 1)
       love.graphics.rectangle("fill",0,340,2000,340)  --floor
@@ -114,7 +117,7 @@ function love.draw()
       love.graphics.polygon("fill",1940,490,1980,500,1940,510)
       DrawClouds()
       DrawTree()
-    else
+      else
       love.graphics.setColor(0.447, 0.231, 0.231)
       love.graphics.rectangle("fill",0,340,800,340) --floor
       love.graphics.setColor(0.698, 0.521, 0.521)
@@ -122,18 +125,18 @@ function love.draw()
       love.graphics.setColor(0.4,1,1)
       love.graphics.rectangle("fill", 800,-300,1000,1000) --unwalkable area
       love.graphics.rectangle("fill", 0,680,2000,340) --unwalkable area
-      if wallsUp == true then 
+      if wallsUp == true then
         love.graphics.setColor(0.407, 0.031, 0.031)
         love.graphics.rectangle("fill",0,340,250,340)
         love.graphics.rectangle("fill",500,340,300,340)
-      end 
+      end
     end
-    DrawWeapon(weapons)
+    DrawWeapon()
     DrawEnemy(enemy)
     DrawBoss(boss)
     if PlayerDead == false then
       DrawPlayer()
-    end 
+    end
     camera:unset()
     if started == false then
       DrawMenuBAck()
@@ -145,5 +148,17 @@ function love.draw()
   elseif GameState == 1 then
     DrawEndBAck(Dead)
     DrawEnd(Respawn,font)
+  elseif GameState== 3 then
+    love.graphics.setBackgroundColor(0.5, 0.5, 0.5)
+  end
+end
+
+function love.keypressed(key)
+  if key == "backspace" then
+    if GameState>2 then
+    GameState=0
+    else
+    GameState= 3
+    end
   end
 end
