@@ -58,6 +58,7 @@ function love.load()
   Win = love.graphics.newImage("victory.png")
 
   weapons[1]=CreateWeapon(100,500,65,10,1)
+  weapons[2]=CreateWeapon(200,500,65,10,1)
 
   font = love.graphics.newFont(32)
 
@@ -84,8 +85,8 @@ function love.update(dt)
     if started == true then
       UpdatePlayer(dt, frictioncoefficient)
       UpdateWeapon(weapons,dt)
-      --UpdateEnemy(enemy, dt, frictioncoefficient)
-      --UpdateBoss(boss,dt, frictioncoefficient)
+      UpdateEnemy(enemy, dt, frictioncoefficient)
+      UpdateBoss(boss,dt, frictioncoefficient)
       UpdateCamera()
       Reset = GetEndstage()
       PlayerDead = UpdatePlayerHealth()  
@@ -128,8 +129,8 @@ function love.draw()
       end 
     end
     DrawWeapon(weapons)
-    --DrawEnemy(enemy)
-    --DrawBoss(boss)
+    DrawEnemy(enemy)
+    DrawBoss(boss)
     if PlayerDead == false then
       DrawPlayer()
     end 
