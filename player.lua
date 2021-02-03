@@ -89,6 +89,7 @@ function UpdatePlayer(dt, frictioncoefficient)
             playerposition.x = 50  playerposition.y = 500 
             velocity = vector2.new(0,0) acceleration = vector2.new(0,0)
             EndStage = true
+            EraseWeapons()
             BackUpCam = true
         end
     end
@@ -150,7 +151,6 @@ function UpdatePlayer(dt, frictioncoefficient)
     elseif wallsUp == true then
         if teleported == false then
             playerposition = vector2.new(200,500)
-            EraseWeapons()
             teleported = true
         end
 

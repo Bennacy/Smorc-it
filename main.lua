@@ -7,6 +7,7 @@ require "menu"
 require "collision"
 require "boss"
 require "map"
+require "SortY"
 
 local frictioncoefficient = 500
 local Buttons = {}
@@ -69,10 +70,6 @@ function love.load()
 end
 
 function love.update(dt)
-
-  love.keypressed()
-
-
   if love.keyboard.isDown("escape") then
     love.event.quit()
   end
@@ -86,6 +83,7 @@ function love.update(dt)
   camera=GetCamera()
   if GameState == 0 then
     if started == true then
+      Sort(enemy, boss)
       UpdatePlayer(dt, frictioncoefficient)
       UpdateWeapon(weapons,dt)
       UpdateEnemy(enemy, dt, frictioncoefficient)
@@ -132,10 +130,8 @@ function love.draw()
       end
     end
     DrawWeapon()
-    DrawEnemy(enemy)
-    DrawBoss(boss)
-    if PlayerDead == false then
-      DrawPlayer()
+    if started== true then
+      SortedDraw(GetPlayerPosition().y)
     end
     camera:unset()
     if started == false then

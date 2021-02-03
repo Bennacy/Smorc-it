@@ -41,7 +41,7 @@ function CreateBoss(x, y, w, h, t)
     end
     return{position=vector2.new(x,y), size=vector2.new(w,h), type= t, health=health, attSp= attackSpeed, maxvelocity= maxvelocity, damage=damage, attacking=false, 
     attackLength= 0, growing=false, maxHealth=maxHealth,delay = 1,
-    KnockBack = false, KnockBackTimer = 0,KnockBackCooldown = 0.05,KnockBackDirection = vector2.new(0,0)}
+    KnockBack = false, KnockBackTimer = 0,KnockBackCooldown = 0.05,KnockBackDirection = vector2.new(0,0), eType= 2}
 end
 
 function DrawBoss(boss)

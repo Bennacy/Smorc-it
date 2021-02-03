@@ -26,32 +26,29 @@ function CreateEnemy(x, y, w, h, t)
 
     return{position=vector2.new(x,y), size=vector2.new(w,h), type= t, health=health, attSp= attackSpeed, maxvelocity= maxvelocity, 
     damage=damage, attacking=false, attackLength= 0, growing=false, maxHealth=health, delay=1, 
-    KnockBack = false, KnockBackTimer = 0,KnockBackCooldown = 0.05,KnockBackDirection = vector2.new(0,0)}
+    KnockBack = false, KnockBackTimer = 0,KnockBackCooldown = 0.05,KnockBackDirection = vector2.new(0,0), engaged= false, randomDist= love.math.random(-30, 30),
+    eType= 1}
 end
 
 function DrawEnemy(enemy)
-    for i=1, #enemy do
-        if enemy[i] then
             love.graphics.setColor(0, 1, 0)
-            love.graphics.rectangle("fill", enemy[i].position.x+ enemy[i].size.x/2, enemy[i].position.y+enemy[i].size.y/1.95, enemy[i].attackLength, 10)
+            love.graphics.rectangle("fill", enemy.position.x+ enemy.size.x/2, enemy.position.y+enemy.size.y/1.95, enemy.attackLength, 10)
 
-            if enemy[i].type== 1 then
+            if enemy.type== 1 then
                 love.graphics.setColor(1, 0.5, 1)
             else
                 love.graphics.setColor(1, 0, 1)
             end
 
-            love.graphics.rectangle("fill", enemy[i].position.x, enemy[i].position.y, enemy[i].size.x, enemy[i].size.y)
+            love.graphics.rectangle("fill", enemy.position.x, enemy.position.y, enemy.size.x, enemy.size.y)
             love.graphics.setColor(1, 0, 0)
-            love.graphics.rectangle("fill", enemy[i].position.x, enemy[i].position.y-15, enemy[i].size.x, 7.5)
+            love.graphics.rectangle("fill", enemy.position.x, enemy.position.y-15, enemy.size.x, 7.5)
             love.graphics.setColor(0, 1, 0.5)
-            love.graphics.rectangle("fill", enemy[i].position.x, enemy[i].position.y-15, (enemy[i].health*enemy[i].size.x)/enemy[i].maxHealth, 7.5)
+            love.graphics.rectangle("fill", enemy.position.x, enemy.position.y-15, (enemy.health*enemy.size.x)/enemy.maxHealth, 7.5)
             love.graphics.setColor(0, 0, 0)
-            love.graphics.rectangle("line", enemy[i].position.x, enemy[i].position.y-15, enemy[i].size.x, 7.5)
+            love.graphics.rectangle("line", enemy.position.x, enemy.position.y-15, enemy.size.x, 7.5)
             love.graphics.setColor(0, 0, 0)
-            love.graphics.rectangle("line", enemy[i].position.x, enemy[i].position.y, enemy[i].size.x, enemy[i].size.y)
-        end
-    end
+            love.graphics.rectangle("line", enemy.position.x, enemy.position.y, enemy.size.x, enemy.size.y)
 end
 
 function UpdateEnemy(enemy,dt, frictionCoef)
@@ -93,9 +90,27 @@ function UpdateEnemy(enemy,dt, frictionCoef)
                 end
 
             elseif math.abs(enemy[i].position.x-playerPos.x)<2000  then
-                local velocity= vector2.sub(playerPos, enemy[i].position)
-                velocity= vector2.normalize(velocity)
-                velocity= vector2.mult(velocity, 100)
+                local velocity= vector2.new(0, 0)
+                if enemy[i].engaged== false then
+                    velocity= vector2.sub(vector2.new(playerPos.x, playerPos.y+ enemy[i].randomDist), enemy[i].position)
+                    velocity= vector2.normalize(velocity)
+                    velocity= vector2.mult(velocity, 100)
+                    --[[
+                    for j= 1, #enemy do
+                        if enemy[j]~= enemy[i] then
+                        if playerPos.x< enemy[j].position.x then
+                            velocity= vector2.sub(vector2.new(playerPos.x+ 250, playerPos.y+ love.math.random(-30, 30)), enemy[j].position)
+                            velocity= vector2.normalize(velocity)
+                            velocity= vector2.mult(velocity, 100)
+                        else
+                            velocity= vector2.sub(vector2.new(playerPos.x- 250, playerPos.y+ love.math.random(-30, 30)), enemy[j].position)
+                            velocity= vector2.normalize(velocity)
+                            velocity= vector2.mult(velocity, 100)
+                        end
+                        end
+                    end
+                    --]]
+                end
 
                 local friction = vector2.mult(velocity, -1)
                 friction = vector2.normalize(friction)
@@ -123,25 +138,21 @@ function UpdateEnemy(enemy,dt, frictionCoef)
                     acceleration.y= 0
                 end
 
-                for j=1, #enemy do
-                    if enemy[j] then
-                        if j~= i then
-                            local collisionDirectionEnemy= GetBoxCollisionDirection(futureposition.x, futureposition.y, enemy[i].size.x, enemy[i].size.y -(enemy[i].size.y/1.3), enemy[j].position.x, enemy[j].position.y, enemy[j].size.x, enemy[j].size.y  -(enemy[j].size.y/1.3))
-                            if collisionDirectionEnemy.x ~= 0 then
-                                velocity.x= 0
-                                acceleration.x= 0
-                            end
-                            if collisionDirectionEnemy.y ~= 0 then
-                                velocity.y= 0
-                                acceleration.y= 0
-                            end
-                        end
+                --[[
+                for j= 1, #enemy do
+                    if enemy[i]~= enemy[j] and math.abs(enemy[j].position.x - playerPos.x)< 50 then
+                        enemy[j].engaged= true
+                    else
+                        enemy[j].engaged= false
                     end
+                    enemy[i].engaged= false
                 end
+                --]]
 
                 if math.abs(enemy[i].position.x- playerPos.x)<50 and math.abs(enemy[i].position.y- playerPos.y)<50 and enemy[i].KnockBack == false then
                     velocity.x= 0
                     acceleration.x= 0
+                    enemy[i].attacking= true
                     EnemyAttack(enemy[i], playerPos, dt, playerSize)
                 else
                     enemy[i].attacking= false
