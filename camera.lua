@@ -7,7 +7,7 @@ camera.scaleY = 0.8
 function UpdateCamera()
 local PlayerPOSI = GetPlayerPosition()
 local camera = GetCameraPos()
-local EndStage = GetEndstage()
+
 
   if PlayerPOSI.x > love.graphics.getWidth() / 2  then 
    camera.x = PlayerPOSI.x - love.graphics.getWidth() /2  
@@ -18,13 +18,6 @@ local EndStage = GetEndstage()
   if camera.y > 200 then 
     camera.y = 200 
   end 
-  if EndStage == true  then   
-      if camera.x < 5000 then
-      camera.x = 5000
-  elseif camera.x > 5400 then 
-    camera.x = 5400
-  end 
-end
 end
   
 
