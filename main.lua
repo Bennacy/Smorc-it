@@ -9,6 +9,7 @@ require "boss"
 require "map"
 require "SortY"
 require "punch"
+require "conf"
 
 local frictioncoefficient = 500
 local Buttons = {}
@@ -27,6 +28,7 @@ local Win
 local WinB = {}
 local playerposition = GetPlayerPosition()
 local punch={}
+local Pause = {}
 
 function RandomCheck(percentage)
   if love.math.random (1, 100)<= percentage then
@@ -52,9 +54,12 @@ function love.load()
   --table.insert(Respawn,NewButton("Try Again", function() started = true GameState = 0  Reset = false  end))
   table.insert(Respawn, NewButton("Exit", function () love.event.quit(0) end))
   table.insert(WinB,NewButton("Exit", function () love.event.quit(0) end))
+  table.insert(Pause,NewButton("Resume", function () GameState = 0 end))
+  table.insert(Pause,NewButton("Exit", function () love.event.quit(0) end))
 end
 
 function love.update(dt)
+  io.write(love.graphics.getWidth() .. ", " .. love.graphics.getHeight() .. "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
   if love.keyboard.isDown("escape") then
     love.event.quit()
   end
@@ -84,8 +89,6 @@ function love.draw()
 
   if GameState == 0 then
     camera:set()
-  
-    love.graphics.setColor(1, 1, 1)
     love.graphics.setColor(0, 0, 1)
     love.graphics.rectangle("fill",0,340,5000,340)  
     love.graphics.setColor(0.450, 0.745, 0.929)
@@ -126,6 +129,8 @@ function love.draw()
     DrawEnd(Respawn,font)
 
   elseif GameState== 3 then
+    DrawMenuBAck()
+    DrawMenu(Pause,font)
     love.graphics.setBackgroundColor(0.5, 0.5, 0.5)
   end
 end
