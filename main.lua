@@ -89,7 +89,6 @@ function love.load()
 end
 
 function love.update(dt)
-  io.write(love.graphics.getWidth() .. ", " .. love.graphics.getHeight() .. "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n")
   if love.keyboard.isDown("escape") then
     love.event.quit()
   end
