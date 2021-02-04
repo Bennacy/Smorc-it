@@ -7,7 +7,7 @@ local mass = 1
 local playersize = vector2.new(30, 60)
 local weapon = nil
 local attacking = false
-local maxvelocity = 300
+local maxvelocity = 9999
 local movementForce = 1500
 local EndStage = false
 local BackUpCam = false
@@ -15,7 +15,8 @@ local maxHealth=750
 local health=maxHealth
 local teleported = false
 local god = false
-
+local wave = 0
+ 
 function UpdatePlayer(dt, frictioncoefficient, enemy)
 --Movement Start
     local friction = vector2.mult(velocity, -1)
@@ -61,7 +62,8 @@ function UpdatePlayer(dt, frictioncoefficient, enemy)
     velocity = vector2.add(velocity, vector2.mult(acceleration, dt))
     velocity = vector2.limit(velocity, maxvelocity)
     playerposition = vector2.add(playerposition, vector2.mult(velocity, dt))
-
+-- Player Movement Restrictions start
+    wave = GetWave()
     if playerposition.y < love.graphics.getHeight()  -200 - playersize.y then
         playerposition.y = love.graphics.getHeight() -200 - playersize.y
     end
@@ -74,19 +76,19 @@ function UpdatePlayer(dt, frictioncoefficient, enemy)
        playerposition.x = (playersize.x /2)*0.3
     end
 
-    if playerposition.x > 800 - playersize.x and #enemy > 18 then
+    if playerposition.x > 800 - playersize.x and #enemy > 0 and wave == 1 then
         playerposition.x = 800 -playersize.x
     end
 
-    if playerposition.x > 1600 - playersize.x and #enemy > 12 then
+    if playerposition.x > 1600 - playersize.x and #enemy > 0 and wave == 2 then
         playerposition.x = 1600 - playersize.x
     end
 
-    if playerposition.x > 3200 - playersize.x and #enemy > 6 then
+    if playerposition.x > 3200 - playersize.x and #enemy > 0 and wave == 3 then
         playerposition.x = 3200 - playersize.x
     end
 
-    if playerposition.x > 4700 - playersize.x and #enemy > 0 then
+    if playerposition.x > 4700 - playersize.x and #enemy > 0 and wave == 4 then
         playerposition.x = 4700 - playersize.x
     end
 

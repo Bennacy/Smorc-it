@@ -1,10 +1,6 @@
 local mass= 1
-local drawing=1000000
 local playerWeapon= {}
-local getboss1 = vector2.new(0,0)
-local hell = vector2.new(100000,0)
-local getboss2 = vector2.new(0,0)
-local teleported = 0
+local spawned = 0
 local walls = false
 
 function CreateBoss(x, y, w, h, t)
@@ -14,30 +10,18 @@ function CreateBoss(x, y, w, h, t)
     local damage
     local maxHealth
     if t == 1 then
-        health= 750
+        health= 1000
         attackSpeed= 1
         maxvelocity= 300
         damage= 1
-        maxHealth = 750
+        maxHealth = 1000
     elseif t == 2 then
-        health= 500
-        attackSpeed= 1.25
-        maxvelocity= 350
-        damage = 2
-        maxHealth = 750
-    elseif t == 3 then
-        health= 250
-        attackSpeed= 1.5
-        maxvelocity= 400
-        damage= 3
-        maxHealth = 750
-    elseif t == 4 then
         health=150
         attackSpeed = 3
         maxvelocity= 900
         damage= 0.5
         maxHealth = 150
-    elseif t == 5 then
+    elseif t == 3 then
         health =200
         attackSpeed = 1
         maxvelocity = 400
@@ -59,10 +43,6 @@ function DrawBoss(sortedBoss)
             love.graphics.setColor(0.921, 0, 0.086)
         elseif sortedBoss.type == 3 then  
             love.graphics.setColor(0.803, 0.015, 0.090)
-        elseif sortedBoss.type == 4  then   
-            love.graphics.setColor(0.996, 0.486, 0.796) 
-        else 
-            love.graphics.setColor(0.674, 0.007, 0.411) 
         end
         love.graphics.rectangle("fill", sortedBoss.position.x, sortedBoss.position.y, sortedBoss.size.x, sortedBoss.size.y)
         love.graphics.setColor(1, 0, 0)
@@ -73,8 +53,6 @@ function DrawBoss(sortedBoss)
         love.graphics.rectangle("line", sortedBoss.position.x, sortedBoss.position.y-15, sortedBoss.size.x, 7.5)
         love.graphics.setColor(0, 0, 0)
         love.graphics.rectangle("line", sortedBoss.position.x, sortedBoss.position.y, sortedBoss.size.x, sortedBoss.size.y)
-
-    love.graphics.rectangle("fill", drawing, 100, 100, 100)
 end
 
 function GetWalls()
@@ -82,31 +60,34 @@ function GetWalls()
 end
 
 function UpdateBoss(boss,dt,frictionCoef)
-    local Reset = GetEndstage()
+    local BossStage = GetEndstage()
     local playerPos=GetPlayerPosition()
     local playerSize=GetPlayerSize()
 
     if dt<0.05 then
-        for i=1, #boss do
-            if boss[i] then
-            if Reset == true and boss[1].health >= 500 and teleported == 0  then
-                boss[1].position.x = 5500
-                teleported = 1
-            elseif boss[2].health >250 and boss[1].health < 500 and teleported == 1 then 
-                getboss1 = boss[1].position
-                boss[1].position =  hell
-                boss[2].position = getboss1
-                boss[4].position.x = 6000
-                boss[5].position.x = 6000
-                boss[6].position.x = 6000
+            if  BossStage == true and spawned == 0  then
+                table.insert( boss,CreateBoss(5500,470, 60, 100, 1))
+                spawned = 1
+            end 
 
-                teleported = 2
-
-            elseif boss[2].health <= 250 and teleported == 2 then
-                boss[2].position = hell
-                boss[3].position = vector2.new(5600,500)
+                for i=1, #boss do
+                    if boss[i] then   
+            if  boss[1].health < 667 and spawned == 1 then 
+                table.insert(boss,CreateBoss(6000,470,20,30,2))
+                table.insert(boss,CreateBoss(6000,520,40,60,3))
+                table.insert(boss,CreateBoss(6000,500,40,60,3))
+                boss[1].damage = 2
+                boss[1].attackSpeed = 1.5
+                boss[1].maxvelocity = 400  
+                spawned = 2
+            elseif boss[1].health < 334 and spawned == 2 then
+                boss[1].damage = 2.5
+                boss[1].attackSpeed = 2
+                boss[1].maxvelocity = 500
+                boss[1].position.x = 5600
+                boss[1].position.y = 470  
+                spawned = 3
                 walls = true
-                teleported = 3
             end
 
             if boss[i].KnockBack == true and boss[i].type > 3 then
@@ -221,8 +202,6 @@ function UpdateBoss(boss,dt,frictionCoef)
                 if boss[i].health<0 then
                     KillBoss(boss, i)
                 end
-                else
-                    drawing= 100
                 end
             end
         end
@@ -239,7 +218,8 @@ function UpdateBoss(boss,dt,frictionCoef)
         return boss[i]
     end
     function GetWin(boss)
-        if #boss == 2 then
+        local BossStage = GetEndstage()
+        if #boss == 0 and BossStage == true then
             return true
         end
     end

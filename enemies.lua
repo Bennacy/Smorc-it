@@ -6,6 +6,7 @@ local playerWeapon= {}
 local spawned = 0
 
 
+
 function CreateEnemy(x, y, w, h, t)
     local health
     local attackSpeed
@@ -56,39 +57,38 @@ function UpdateEnemy(origEnemy,dt, frictionCoef)
     local playerPos=GetPlayerPosition()
     local playerSize=GetPlayerSize()
     if dt<0.05 then
-
-    for i=1, #enemy do
         if playerPos.x >= 250 and spawned == 0 then 
-            enemy[1].position.x = 700 
-            enemy[2].position.x = 700
-            enemy[3].position.x = -10 
+            table.insert(enemy,CreateEnemy(700,420, 30, 60, 1))
+            table.insert(enemy, CreateEnemy(700, 560, 30, 60, 1))
+            table.insert(enemy,CreateEnemy(-10, 470, 30, 60, 1))
             spawned = 1
+            
         elseif playerPos.x >= 1000 and spawned == 1 then 
-            enemy[1].position.x = 600
-            enemy[2].position.x = 600
-            enemy[3].position.x = 650
-            enemy[4].position.x = 1500
-            enemy[5].position.x = 1500 
-            enemy[6].position.x = 1450 
+            table.insert(enemy,CreateEnemy(600,420, 30, 60, 1))
+            table.insert(enemy, CreateEnemy(600, 560, 30, 60, 1))
+            table.insert(enemy,CreateEnemy(650, 470, 30, 60, 1))
+            table.insert(enemy,CreateEnemy(1500,420, 30, 60, 1))
+            table.insert(enemy, CreateEnemy(1500, 560, 30, 60, 1))
+            table.insert(enemy,CreateEnemy(1450, 470, 30, 60, 1))
             spawned = 2 
         elseif playerPos.x >= 2500 and spawned == 2 then 
-            enemy[1].position.x = 2100
-            enemy[2].position.x = 2100
-            enemy[3].position.x = 2150
-            enemy[4].position.x = 2900
-            enemy[5].position.x = 2900 
-            enemy[6].position.x = 2950
+            table.insert(enemy,CreateEnemy(2100,420, 30, 60, 1))
+            table.insert(enemy, CreateEnemy(2100, 560, 30, 60, 1))
+            table.insert(enemy,CreateEnemy(2150, 470, 40, 60, 2))
+            table.insert(enemy,CreateEnemy(2900,420, 30, 60, 1))
+            table.insert(enemy, CreateEnemy(2900, 560, 30, 60, 1))
+            table.insert(enemy,CreateEnemy(2950, 470, 40, 60, 2))
             spawned = 3
         elseif playerPos.x >= 4000 and spawned == 3 then 
-            enemy[1].position.x = 3600
-            enemy[2].position.x = 3600
-            enemy[3].position.x = 3650
-            enemy[4].position.x = 4500
-            enemy[5].position.x = 4500 
-            enemy[6].position.x = 4550
+            table.insert(enemy,CreateEnemy(3600,420, 40, 60, 2))
+            table.insert(enemy, CreateEnemy(3600, 560, 40, 60, 2))
+            table.insert(enemy,CreateEnemy(3650, 470, 40, 60, 2))
+            table.insert(enemy,CreateEnemy(4500,420, 40, 60, 2))
+            table.insert(enemy, CreateEnemy(4500, 560, 40, 60, 2))
+            table.insert(enemy,CreateEnemy(4550, 470, 40, 60, 2))
             spawned = 4
         end 
-
+        for i=1, #enemy do
         if enemy[i] then
             if enemy[i].KnockBack == true then
                 enemy[i].KnockBackTimer = enemy[i].KnockBackTimer+dt
@@ -254,6 +254,11 @@ function KillEnemy(enemy, i)
     end
     table.remove(enemy, i)
     return enemy[i]
+end
+
+function GetWave()
+    return spawned
+    
 end
 
 
