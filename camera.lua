@@ -7,8 +7,8 @@ camera.scaleY = 0.8
 function UpdateCamera()
 local PlayerPOSI = GetPlayerPosition()
 local camera = GetCameraPos()
-local cameraRES = Getcamerareset()
-if cameraRES == false then
+
+
   if PlayerPOSI.x > love.graphics.getWidth() / 2  then 
    camera.x = PlayerPOSI.x - love.graphics.getWidth() /2  
   end
@@ -19,13 +19,7 @@ if cameraRES == false then
     camera.y = 200 
   end 
 end
- if cameraRES == true then 
-  camera.x = 50 
-  camera.y = 500 - love.graphics.getHeight() / 2
-  cameraRES = false 
-  end
   
-end
 
 function GetCamera()
   return camera

@@ -16,12 +16,11 @@ local health=maxHealth
 local teleported = false
 local god = false
 
-function UpdatePlayer(dt, frictioncoefficient)
+function UpdatePlayer(dt, frictioncoefficient, enemy)
 --Movement Start
     local friction = vector2.mult(velocity, -1)
     friction = vector2.normalize(friction)
     friction = vector2.mult(friction, frictioncoefficient)
-    local enemy=GetEnemy()
     local acceleration = vector2.new(0, 0)
     local wallsUp = GetWalls()
 
@@ -63,7 +62,61 @@ function UpdatePlayer(dt, frictioncoefficient)
     velocity = vector2.limit(velocity, maxvelocity)
     playerposition = vector2.add(playerposition, vector2.mult(velocity, dt))
 
-    if EndStage == false then 
+    if playerposition.y < love.graphics.getHeight()  -200 - playersize.y then
+        playerposition.y = love.graphics.getHeight() -200 - playersize.y
+    end
+
+    if playerposition.y > love.graphics.getHeight() + 80 - playersize.y then
+        playerposition.y = love.graphics.getHeight() + 80 - playersize.y
+    end
+
+    if playerposition.x < (playersize.x/2)*0.3 then
+       playerposition.x = (playersize.x /2)*0.3
+    end
+
+    if playerposition.x > 800 - playersize.x and #enemy > 18 then
+        playerposition.x = 800 -playersize.x
+    end
+
+    if playerposition.x > 1600 - playersize.x and #enemy > 12 then
+        playerposition.x = 1600 - playersize.x
+    end
+
+    if playerposition.x > 3200 - playersize.x and #enemy > 6 then
+        playerposition.x = 3200 - playersize.x
+    end
+
+    if playerposition.x > 4700 - playersize.x and #enemy > 0 then
+        playerposition.x = 4700 - playersize.x
+    end
+
+    if playerposition.x > 5075  then
+        EndStage = true
+    end
+
+    if playerposition.x > 6000 - playersize.x  then
+        playerposition.x = 6000 - playersize.x
+    end
+
+    if EndStage == true and playerposition.x < 5075  then 
+        playerposition.x = 5075
+    end
+
+    if wallsUp == true then
+        if teleported == false then
+            playerposition = vector2.new(5450,500)
+            velocity = vector2.new(0,0)
+            teleported = true
+        end
+
+        if playerposition.x >= 5700 - playersize.x then
+            playerposition.x = 5700 - playersize.x
+        end
+
+        if playerposition.x < 5400  then
+            playerposition.x = 5400
+        end
+
         if playerposition.y < love.graphics.getHeight()  -200 - playersize.y then
             playerposition.y = love.graphics.getHeight() -200 - playersize.y
         end
@@ -71,29 +124,9 @@ function UpdatePlayer(dt, frictioncoefficient)
         if playerposition.y > love.graphics.getHeight() + 80 - playersize.y then
             playerposition.y = love.graphics.getHeight() + 80 - playersize.y
         end
-
-
-        if playerposition.x < (playersize.x/2)*0.3 then
-            playerposition.x = (playersize.x /2)*0.3
-        end
-
-        if playerposition.x > 800 - playersize.x and #enemy > 6 then 
-            playerposition.x = 800 -playersize.x
-        end
-
-        if playerposition.x > 1890 - playersize.x and #enemy~=0 then
-            playerposition.x = 1890 - playersize.x
-        end
-
-        if playerposition.x > 1900 - playersize.x and #enemy==0 then 
-            playerposition.x = 50  playerposition.y = 500 
-            velocity = vector2.new(0,0) acceleration = vector2.new(0,0)
-            EndStage = true
-            EraseWeapons()
-            BackUpCam = true
-        end
     end
 --Movement End
+
 
 --Weapon Start
     if weapon ~= nil then
@@ -130,46 +163,6 @@ function UpdatePlayer(dt, frictioncoefficient)
         attacking= false
     end
 --Weapon End
-
-    if EndStage == true and wallsUp == false then
-        if playerposition.y < love.graphics.getHeight()  -200 - playersize.y then
-            playerposition.y = love.graphics.getHeight() -200 - playersize.y
-        end
-
-        if playerposition.y > love.graphics.getHeight() + 80 - playersize.y then
-            playerposition.y = love.graphics.getHeight() + 80 - playersize.y
-        end
-
-        if playerposition.x > 700 - playersize.x then
-            playerposition.x = 700 - playersize.x
-        end
-
-        if playerposition.x < (playersize.x *1.5)  then
-            playerposition.x = (playersize.x *1.5)
-        end
-
-    elseif wallsUp == true then
-        if teleported == false then
-            playerposition = vector2.new(200,500)
-            teleported = true
-        end
-
-        if playerposition.x >= 500 - playersize.x then
-            playerposition.x =  500 - playersize.x
-        end
-
-        if playerposition.x < 250 then
-            playerposition.x = 250
-        end
-
-        if playerposition.y < love.graphics.getHeight()  -200 - playersize.y then
-            playerposition.y = love.graphics.getHeight() -200 - playersize.y
-        end
-
-        if playerposition.y > love.graphics.getHeight() + 80 - playersize.y then
-            playerposition.y = love.graphics.getHeight() + 80 - playersize.y
-        end
-    end
 end
 
 function DrawPlayer()
@@ -177,6 +170,7 @@ function DrawPlayer()
         love.graphics.setColor(0.2, 0, 0.5)
         love.graphics.rectangle("fill", playerposition.x+ playersize.x/2, playerposition.y+ playersize.y/3, weapon.direction* weapon.size.x, weapon.size.y)
     end
+    DrawPunch()
 
     love.graphics.setColor(1, 1, 1)
     love.graphics.rectangle("fill", playerposition.x, playerposition.y, playersize.x, playersize.y)

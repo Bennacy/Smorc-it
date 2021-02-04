@@ -1,7 +1,7 @@
 require "player"
 
 local mass= 1
-local ea= {}
+local enemy= {}
 local playerWeapon= {}
 local spawned = 0
 
@@ -30,48 +30,64 @@ function CreateEnemy(x, y, w, h, t)
     eType= 1}
 end
 
-function DrawEnemy(enemy)
+function DrawEnemy(sortedEnemy)
             love.graphics.setColor(0, 1, 0)
-            love.graphics.rectangle("fill", enemy.position.x+ enemy.size.x/2, enemy.position.y+enemy.size.y/1.95, enemy.attackLength, 10)
+            love.graphics.rectangle("fill", sortedEnemy.position.x+ sortedEnemy.size.x/2, sortedEnemy.position.y+sortedEnemy.size.y/1.95, sortedEnemy.attackLength, 10)
 
-            if enemy.type== 1 then
+            if sortedEnemy.type== 1 then
                 love.graphics.setColor(1, 0.5, 1)
             else
                 love.graphics.setColor(1, 0, 1)
             end
 
-            love.graphics.rectangle("fill", enemy.position.x, enemy.position.y, enemy.size.x, enemy.size.y)
+            love.graphics.rectangle("fill", sortedEnemy.position.x, sortedEnemy.position.y, sortedEnemy.size.x, sortedEnemy.size.y)
             love.graphics.setColor(1, 0, 0)
-            love.graphics.rectangle("fill", enemy.position.x, enemy.position.y-15, enemy.size.x, 7.5)
+            love.graphics.rectangle("fill", sortedEnemy.position.x, sortedEnemy.position.y-15, sortedEnemy.size.x, 7.5)
             love.graphics.setColor(0, 1, 0.5)
-            love.graphics.rectangle("fill", enemy.position.x, enemy.position.y-15, (enemy.health*enemy.size.x)/enemy.maxHealth, 7.5)
+            love.graphics.rectangle("fill", sortedEnemy.position.x, sortedEnemy.position.y-15, (sortedEnemy.health*sortedEnemy.size.x)/sortedEnemy.maxHealth, 7.5)
             love.graphics.setColor(0, 0, 0)
-            love.graphics.rectangle("line", enemy.position.x, enemy.position.y-15, enemy.size.x, 7.5)
+            love.graphics.rectangle("line", sortedEnemy.position.x, sortedEnemy.position.y-15, sortedEnemy.size.x, 7.5)
             love.graphics.setColor(0, 0, 0)
-            love.graphics.rectangle("line", enemy.position.x, enemy.position.y, enemy.size.x, enemy.size.y)
+            love.graphics.rectangle("line", sortedEnemy.position.x, sortedEnemy.position.y, sortedEnemy.size.x, sortedEnemy.size.y)
 end
 
-function UpdateEnemy(enemy,dt, frictionCoef)
+function UpdateEnemy(origEnemy,dt, frictionCoef)
+    enemy= origEnemy
     local playerPos=GetPlayerPosition()
     local playerSize=GetPlayerSize()
     if dt<0.05 then
 
     for i=1, #enemy do
-        if playerPos.x >= 250 and spawned == 0 then
-            enemy[1].position.x = 700
+        if playerPos.x >= 250 and spawned == 0 then 
+            enemy[1].position.x = 700 
             enemy[2].position.x = 700
-            enemy[3].position.x = -10
+            enemy[3].position.x = -10 
             spawned = 1
-
-        elseif playerPos.x >= 1000 and spawned == 1 then
+        elseif playerPos.x >= 1000 and spawned == 1 then 
             enemy[1].position.x = 600
             enemy[2].position.x = 600
             enemy[3].position.x = 650
             enemy[4].position.x = 1500
-            enemy[5].position.x = 1500
-            enemy[6].position.x = 1450
-            spawned = 2
-        end
+            enemy[5].position.x = 1500 
+            enemy[6].position.x = 1450 
+            spawned = 2 
+        elseif playerPos.x >= 2500 and spawned == 2 then 
+            enemy[1].position.x = 2100
+            enemy[2].position.x = 2100
+            enemy[3].position.x = 2150
+            enemy[4].position.x = 2900
+            enemy[5].position.x = 2900 
+            enemy[6].position.x = 2950
+            spawned = 3
+        elseif playerPos.x >= 4000 and spawned == 3 then 
+            enemy[1].position.x = 3600
+            enemy[2].position.x = 3600
+            enemy[3].position.x = 3650
+            enemy[4].position.x = 4500
+            enemy[5].position.x = 4500 
+            enemy[6].position.x = 4550
+            spawned = 4
+        end 
 
         if enemy[i] then
             if enemy[i].KnockBack == true then
@@ -91,26 +107,24 @@ function UpdateEnemy(enemy,dt, frictionCoef)
 
             elseif math.abs(enemy[i].position.x-playerPos.x)<2000  then
                 local velocity= vector2.new(0, 0)
-                if enemy[i].engaged== false then
-                    velocity= vector2.sub(vector2.new(playerPos.x, playerPos.y+ enemy[i].randomDist), enemy[i].position)
-                    velocity= vector2.normalize(velocity)
-                    velocity= vector2.mult(velocity, 100)
-                    --[[
-                    for j= 1, #enemy do
-                        if enemy[j]~= enemy[i] then
-                        if playerPos.x< enemy[j].position.x then
-                            velocity= vector2.sub(vector2.new(playerPos.x+ 250, playerPos.y+ love.math.random(-30, 30)), enemy[j].position)
-                            velocity= vector2.normalize(velocity)
-                            velocity= vector2.mult(velocity, 100)
-                        else
-                            velocity= vector2.sub(vector2.new(playerPos.x- 250, playerPos.y+ love.math.random(-30, 30)), enemy[j].position)
-                            velocity= vector2.normalize(velocity)
-                            velocity= vector2.mult(velocity, 100)
-                        end
-                        end
+                velocity= vector2.sub(vector2.new(playerPos.x, playerPos.y+ enemy[i].randomDist), enemy[i].position)
+                velocity= vector2.normalize(velocity)
+                velocity= vector2.mult(velocity, 100)
+                --[[
+                for j= 1, #enemy do
+                    if enemy[j]~= enemy[i] then
+                    if playerPos.x< enemy[j].position.x then
+                        velocity= vector2.sub(vector2.new(playerPos.x+ 250, playerPos.y+ love.math.random(-30, 30)), enemy[j].position)
+                        velocity= vector2.normalize(velocity)
+                        velocity= vector2.mult(velocity, 100)
+                    else
+                        velocity= vector2.sub(vector2.new(playerPos.x- 250, playerPos.y+ love.math.random(-30, 30)), enemy[j].position)
+                        velocity= vector2.normalize(velocity)
+                        velocity= vector2.mult(velocity, 100)
                     end
-                    --]]
+                    end
                 end
+                --]]
 
                 local friction = vector2.mult(velocity, -1)
                 friction = vector2.normalize(friction)
@@ -170,7 +184,7 @@ function UpdateEnemy(enemy,dt, frictionCoef)
                 enemy[i].delay= 0
             end
 
-            --Player Weapon Start
+            --Attack Enemy Start
             playerWeapon= GetPlayerWeapon()
             if playerWeapon~= nil then
                 local playerAttack= GetAttack()
@@ -190,7 +204,31 @@ function UpdateEnemy(enemy,dt, frictionCoef)
                     enemy[i].KnockBack = true
                 end
             end
-            --Player Weapon End
+
+            local punch= GetPunch()
+                if punch.direction>0 and punch.attacking==true and CheckCollision(punch.position.x, punch.position.y, punch.size.x, punch.size.y, 
+                enemy[i].position.x, enemy[i].position.y, enemy[i].size.x, enemy[i].size.y)== true then
+
+                    if enemy[i].delay>-1 then --ataque para direita
+                    DamageEnemy(enemy, punch.damage, i)
+                    enemy[i].KnockBackDirection = vector2.new(1,0)
+                    enemy[i].delay=0
+                    enemy[i].KnockBack = true
+                   end
+
+                elseif punch.direction<0 then --ataque para esquerda
+                    if punch.attacking==true and CheckCollision(punch.position.x-punch.size.x, punch.position.y, punch.size.x, punch.size.y, 
+                    enemy[i].position.x, enemy[i].position.y, enemy[i].size.x, enemy[i].size.y)== true then
+
+                    if enemy[i].delay>-1 then
+                        DamageEnemy(enemy, punch.damage, i)
+                        enemy[i].KnockBackDirection = vector2.new(-1,0)
+                        enemy[i].KnockBack = true
+                        enemy[i].delay=0
+                    end
+                    end
+                end
+            --Attack Enemy End
 
             if enemy[i].health<0 then
                 KillEnemy(enemy, i)
@@ -198,7 +236,6 @@ function UpdateEnemy(enemy,dt, frictionCoef)
         end
     end
     end
-    ea=enemy
 end
 
 
@@ -217,11 +254,11 @@ function KillEnemy(enemy, i)
     end
     table.remove(enemy, i)
     return enemy[i]
-end 
+end
 
 
 function GetEnemy()
-    return ea
+    return enemy
 end
 
 
@@ -274,7 +311,6 @@ function CheckEnemyWeaponCollision(enemyweapon, player, enemy)
     elseif enemyweapon.size.x<0 then
         if CheckCollision(enemyweapon.position.x+enemyweapon.size.x, enemyweapon.position.y, -enemyweapon.size.x, enemyweapon.size.y, player.position.x, player.position.y, player.size.x, player.size.y)== true then
             DamagePlayer(enemy.damage)
-            
         end
     end
 end

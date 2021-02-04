@@ -8,6 +8,7 @@ require "collision"
 require "boss"
 require "map"
 require "SortY"
+require "punch"
 
 local frictioncoefficient = 500
 local Buttons = {}
@@ -19,14 +20,14 @@ local camera= {}
 local boss = {}
 local PlayerDead = false
 local weapons = {}
-local GameState = 0 
+local GameState = 0
 local Respawn = {}
-local Dead 
-local wallsUp 
+local Dead
+local wallsUp
 local Win
 local WinB = {}
 local playerposition = GetPlayerPosition()
-local palyersize = GetPlayerSize()
+local punch={}
 
 function RandomCheck(percentage)
   if love.math.random (1, 100)<= percentage then
@@ -47,18 +48,32 @@ function love.load()
 
   enemy[1]=CreateEnemy(10000, 420, 30, 60, 1)
   enemy[2]=CreateEnemy(10000, 560, 30, 60, 1)
-  enemy[3]=CreateEnemy(10000, 470, 40, 60, 2)
+  enemy[3]=CreateEnemy(10000, 470, 30, 60, 1)
   enemy[4]=CreateEnemy(10000, 360, 30, 60, 1)
   enemy[5]=CreateEnemy(10000, 590, 30, 60, 1)
-  enemy[6]=CreateEnemy(10000, 470, 40, 60, 2)
+  enemy[6]=CreateEnemy(10000, 470, 30, 60, 1)
   enemy[7]=CreateEnemy(10000, 400, 30, 60, 1)
   enemy[8]=CreateEnemy(10000, 500, 30, 60, 1)
-  enemy[9]=CreateEnemy(10000, 550, 40, 60, 2)
+  enemy[9]=CreateEnemy(10000, 550, 30, 60, 1)
+  enemy[10]=CreateEnemy(10000, 360, 30, 60, 1)
+  enemy[11]=CreateEnemy(10000, 590, 30, 60, 1)
+  enemy[12]=CreateEnemy(10000, 470, 40, 60, 2)
+  enemy[13]=CreateEnemy(10000, 400, 30, 60, 1)
+  enemy[14]=CreateEnemy(10000, 500, 30, 60, 1)
+  enemy[15]=CreateEnemy(10000, 550, 40, 60, 2)
+  enemy[16]=CreateEnemy(10000, 550, 40, 60, 2)
+  enemy[17]=CreateEnemy(10000, 590, 40, 60, 2)
+  enemy[18]=CreateEnemy(10000, 470, 40, 60, 2)
+  enemy[19]=CreateEnemy(10000, 400, 40, 60, 2)
+  enemy[20]=CreateEnemy(10000, 500, 40, 60, 2)
+  enemy[21]=CreateEnemy(10000, 550, 40, 60, 2)
 
   Dead = love.graphics.newImage("gameOver.png")
   Win = love.graphics.newImage("victory.png")
 
   weapons[1]=CreateWeapon(100,500,65,10,1)
+
+  punch=CreatePunch(0,0,40,10)
 
   font = love.graphics.newFont(32)
 
@@ -84,13 +99,13 @@ function love.update(dt)
   if GameState == 0 then
     if started == true then
       Sort(enemy, boss)
-      UpdatePlayer(dt, frictioncoefficient)
+      UpdatePlayer(dt, frictioncoefficient, enemy)
+      UpdatePunch(punch, dt)
       UpdateWeapon(weapons,dt)
       UpdateEnemy(enemy, dt, frictioncoefficient)
       UpdateBoss(boss,dt, frictioncoefficient)
       UpdateCamera()
       Reset = GetEndstage()
-      PlayerDead = UpdatePlayerHealth()
     end
   end
   wallsUp = GetWalls()
@@ -101,49 +116,47 @@ function love.draw()
 
   if GameState == 0 then
     camera:set()
-    if Reset == false then
-      love.graphics.setColor(1, 1, 1)
-      love.graphics.setColor(0, 0, 1)
-      love.graphics.rectangle("fill",0,340,2000,340)  --floor
-      love.graphics.setColor(0.450, 0.745, 0.929)
-      love.graphics.rectangle("fill", 0,0,3000,340) --background
-      love.graphics.setColor(0,1,1)
-      love.graphics.rectangle("fill", 2000,340,2000,340) --unwalkable area
-      Linesinmap()
-      love.graphics.setColor(1,0,0)
-      love.graphics.rectangle("fill",1900,500,40,5)
-      love.graphics.polygon("fill",1940,490,1980,500,1940,510)
-      DrawClouds()
-      DrawTree()
-      else
-      love.graphics.setColor(0.447, 0.231, 0.231)
-      love.graphics.rectangle("fill",0,340,800,340) --floor
-      love.graphics.setColor(0.698, 0.521, 0.521)
-      love.graphics.rectangle("fill",0,0,800,340) --background
-      love.graphics.setColor(0.4,1,1)
-      love.graphics.rectangle("fill", 800,-300,1000,1000) --unwalkable area
-      love.graphics.rectangle("fill", 0,680,2000,340) --unwalkable area
-      if wallsUp == true then
-        love.graphics.setColor(0.407, 0.031, 0.031)
-        love.graphics.rectangle("fill",0,340,250,340)
-        love.graphics.rectangle("fill",500,340,300,340)
-      end
+  
+    love.graphics.setColor(1, 1, 1)
+    love.graphics.setColor(0, 0, 1)
+    love.graphics.rectangle("fill",0,340,5000,340)  --floor
+    love.graphics.setColor(0.450, 0.745, 0.929)
+    love.graphics.rectangle("fill", 0,0,5000,340) --background
+    love.graphics.setColor(0,1,1)
+    love.graphics.rectangle("fill", 5000,340,900,340) --unwalkable area
+    Linesinmap()
+    if Reset == true then
+      love.graphics.setColor(0.407, 0.031, 0.031)
+      love.graphics.rectangle("fill",5000,340,75,340)
     end
+    
+    DrawClouds()
+    DrawTree()
+    if wallsUp == true then 
+      love.graphics.setColor(0.407, 0.031, 0.031)
+      love.graphics.rectangle("fill",5000,340,400,340)
+      love.graphics.rectangle("fill",5700,340,700,340)
+    end
+
     DrawWeapon()
     if started== true then
-      SortedDraw(GetPlayerPosition().y)
+      SortedDraw(playerposition.y)
     end
+
     camera:unset()
     if started == false then
       DrawMenuBAck()
       DrawMenu(Buttons,font)
     end
+
   elseif GameState == 2 then
     DrawWinBAck(Win)
     DrawWin(WinB,font)
+
   elseif GameState == 1 then
     DrawEndBAck(Dead)
     DrawEnd(Respawn,font)
+
   elseif GameState== 3 then
     love.graphics.setBackgroundColor(0.5, 0.5, 0.5)
   end
@@ -152,9 +165,9 @@ end
 function love.keypressed(key)
   if key == "backspace" then
     if GameState>2 then
-    GameState=0
+      GameState=0
     else
-    GameState= 3
+      GameState= 3
     end
   end
 end
